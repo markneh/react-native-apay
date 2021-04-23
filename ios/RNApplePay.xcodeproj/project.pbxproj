@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		B3E7B58A1CC2AC0600A0062D /* RNApplePay.m in Sources */ = {isa = PBXBuildFile; fileRef = B3E7B5891CC2AC0600A0062D /* RNApplePay.m */; };
+		CECA07FD2386E0C70012BA30 /* RNApplePayButton.m in Sources */ = {isa = PBXBuildFile; fileRef = CECA07F92386E0C70012BA30 /* RNApplePayButton.m */; };
+		CECA07FE2386E0C70012BA30 /* RNApplePayButtonView.m in Sources */ = {isa = PBXBuildFile; fileRef = CECA07FB2386E0C70012BA30 /* RNApplePayButtonView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +28,10 @@
 		134814201AA4EA6300B7C361 /* libRNApplePay.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRNApplePay.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3E7B5881CC2AC0600A0062D /* RNApplePay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNApplePay.h; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* RNApplePay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNApplePay.m; sourceTree = "<group>"; };
+		CECA07F92386E0C70012BA30 /* RNApplePayButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNApplePayButton.m; sourceTree = "<group>"; };
+		CECA07FA2386E0C70012BA30 /* RNApplePayButtonView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNApplePayButtonView.h; sourceTree = "<group>"; };
+		CECA07FB2386E0C70012BA30 /* RNApplePayButtonView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RNApplePayButtonView.m; sourceTree = "<group>"; };
+		CECA07FC2386E0C70012BA30 /* RNApplePayButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RNApplePayButton.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -50,6 +56,10 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				CECA07FC2386E0C70012BA30 /* RNApplePayButton.h */,
+				CECA07F92386E0C70012BA30 /* RNApplePayButton.m */,
+				CECA07FA2386E0C70012BA30 /* RNApplePayButtonView.h */,
+				CECA07FB2386E0C70012BA30 /* RNApplePayButtonView.m */,
 				B3E7B5881CC2AC0600A0062D /* RNApplePay.h */,
 				B3E7B5891CC2AC0600A0062D /* RNApplePay.m */,
 				134814211AA4EA7D00B7C361 /* Products */,
@@ -95,6 +105,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 			);
 			mainGroup = 58B511D21A9E6C8500147676;
@@ -113,6 +124,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3E7B58A1CC2AC0600A0062D /* RNApplePay.m in Sources */,
+				CECA07FD2386E0C70012BA30 /* RNApplePayButton.m in Sources */,
+				CECA07FE2386E0C70012BA30 /* RNApplePayButtonView.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,7 +217,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				HEADER_SEARCH_PATHS = (
-				"$(inherited)",
+					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(SRCROOT)/../../../React/**",
 					"$(SRCROOT)/../../react-native/React/**",

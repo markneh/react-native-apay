@@ -1,5 +1,6 @@
 
 import { NativeModules, Platform } from 'react-native';
+import ApplePayButton from './ApplePayButton';
 
 const { RNApplePay } = NativeModules;
 
@@ -14,4 +15,4 @@ const mockAndroid = {
 
 const ApplePay = Platform.OS === 'ios' ? RNApplePay : mockAndroid
 
-export { ApplePay };
+export { ApplePay, ApplePayButton };

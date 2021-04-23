@@ -34,6 +34,13 @@ RCT_EXPORT_METHOD(requestPayment:(NSDictionary *)props promiseWithResolver:(RCTP
     paymentRequest.supportedNetworks = [self getSupportedNetworks:props];
     paymentRequest.paymentSummaryItems = [self getPaymentSummaryItems:props];
     
+    if (@available(iOS 11.0, *)) {
+        paymentRequest.requiredBillingContactFields = [self getRequiredBillingInfo:props];
+    } else {
+        // TODO: Implement pre iOS 11 support
+        // paymentRequest.requiredBillingAddressFields = ;
+    }
+    
     self.viewController = [[PKPaymentAuthorizationViewController alloc] initWithPaymentRequest: paymentRequest];
     self.viewController.delegate = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -53,6 +60,38 @@ RCT_EXPORT_METHOD(complete:(NSNumber *_Nonnull)status promiseWithResolver:(RCTPr
         }
         self.completion = NULL;
     }
+}
+
+RCT_EXPORT_METHOD(isConfiguredForNetworks:(NSArray *)networksToCheck
+                  promiseWithResolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject)
+{
+    NSMutableDictionary *wrapper = [[NSMutableDictionary alloc] init];
+    wrapper[@"supportedNetworks"] = networksToCheck;
+    NSArray *networks = [self getSupportedNetworks:wrapper];
+    BOOL result = [PKPaymentAuthorizationViewController canMakePaymentsUsingNetworks:networks];
+    resolve(@(result));
+}
+
+RCT_EXPORT_METHOD(openSetup)
+{
+    [[[PKPassLibrary alloc] init] openPaymentSetup];
+}
+
+- (NSSet *_Nonnull)getRequiredBillingInfo:(NSDictionary *_Nonnull)props
+{
+    NSMutableArray *billingInfoItems = [[NSMutableArray alloc] init];
+    NSArray *fieldsToExtract = props[@"requiredBillingFields"];
+    NSDictionary *mapping = [self propsToPKContactFieldMapping];
+    
+    for (NSString *item in fieldsToExtract) {
+        id field = mapping[item];
+        if (field) {
+            [billingInfoItems addObject:field];
+        }
+    }
+    
+    return [NSSet setWithArray:billingInfoItems];
 }
 
 - (NSArray *_Nonnull)getSupportedNetworks:(NSDictionary *_Nonnull)props
@@ -125,8 +164,12 @@ RCT_EXPORT_METHOD(complete:(NSNumber *_Nonnull)status promiseWithResolver:(RCTPr
 {
     self.completion = completion;
     if (self.requestPaymentResolve != NULL) {
-        NSString *paymentData = [[NSString alloc] initWithData:payment.token.paymentData encoding:NSUTF8StringEncoding];
-        self.requestPaymentResolve(paymentData);
+        NSMutableDictionary *response = [[NSMutableDictionary alloc] init];
+        
+        response[@"paymentData"] = [[NSString alloc] initWithData:payment.token.paymentData encoding:NSUTF8StringEncoding];
+        response[@"billingInfo"] = [self billingContactFromPayment:payment];
+        
+        self.requestPaymentResolve(response);
         self.requestPaymentResolve = NULL;
     }
 }
@@ -140,6 +183,57 @@ RCT_EXPORT_METHOD(complete:(NSNumber *_Nonnull)status promiseWithResolver:(RCTPr
             }
         }];
     });
+}
+
+- (NSDictionary *)billingContactFromPayment:(PKPayment *)payment
+{
+    NSMutableDictionary *data = [[NSMutableDictionary alloc] init];
+    
+    if (@available(iOS 11, *)) {
+        
+        if (!payment.billingContact) {
+            return data;
+        }
+        
+        PKContact *info = payment.billingContact;
+        
+        if (info.name) {
+            NSPersonNameComponents *name = info.name;
+            NSString *firstName = name.givenName && name.givenName.length > 0 ? name.givenName : @"";
+            NSString *lastName = name.familyName && name.familyName.length > 0 ? name.familyName : @"";
+            data[@"name"] = @{
+                @"firstName": firstName,
+                @"lastName": lastName,
+            };
+        }
+        
+        if (info.postalAddress) {
+            CNPostalAddress *address = info.postalAddress;
+            NSMutableDictionary *addressData = [[NSMutableDictionary alloc] init];
+            addressData[@"street"] = address.street;
+            addressData[@"city"] = address.city;
+            addressData[@"country"] = address.country;
+            addressData[@"countryCode"] = address.ISOCountryCode;
+            addressData[@"state"] = address.state;
+            addressData[@"zip"] = address.postalCode;
+            data[@"address"] = addressData;
+        }
+    }
+    
+    return data;
+}
+
+- (NSDictionary *)propsToPKContactFieldMapping {
+    if (@available(iOS 11, *)) {
+        return @{
+            @"email": PKContactFieldEmailAddress,
+            @"name": PKContactFieldName,
+            @"phone": PKContactFieldPhoneNumber,
+            @"phoneticname": PKContactFieldPhoneticName,
+            @"address": PKContactFieldPostalAddress
+        };
+    }
+    return @{};
 }
 
 @end
